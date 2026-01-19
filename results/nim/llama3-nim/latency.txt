@@ -1,0 +1,8 @@
+Llama-3.1-8B NIM Latency Results (TensorRT-LLM)
+=============================================
+
+max_tokens=32: 1.008401s, 32 tokens, 31.7 tok/s
+max_tokens=64: 2.012418s, 64 tokens, 31.8 tok/s
+max_tokens=128: 4.026101s, 128 tokens, 31.7 tok/s
+max_tokens=256: 8.050271s, 256 tokens, 31.8 tok/s
+max_tokens=512: 16.144415s, 512 tokens, 31.7 tok/s

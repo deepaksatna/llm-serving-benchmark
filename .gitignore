@@ -1,0 +1,60 @@
+# LLM Inference Benchmark - Git Ignore
+
+# Binary profile files (optional - remove if you want to include)
+# *.nsys-rep
+# *.sqlite
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+eggs/
+.eggs/
+*.egg-info/
+.installed.cfg
+*.egg
+venv/
+ENV/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Kubernetes secrets (never commit)
+*secret*.yaml
+*credentials*
+*.key
+*.pem
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+*.bak
+
+# Large model files (should use FSS, not git)
+*.bin
+*.safetensors
+*.gguf
+*.pt
+*.pth
+*.onnx
+
+# Test output
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Local environment overrides
+.env
+.env.local
+*.local.yaml

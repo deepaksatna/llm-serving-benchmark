@@ -1,0 +1,106 @@
+# SGLang - Llama-3-8B-Instruct
+# High-performance LLM serving with RadixAttention and FlashInfer
+# Throughput: ~28.5 tok/s on NVIDIA A10
+apiVersion: v1
+kind: Service
+metadata:
+  name: sglang-llama-svc
+  namespace: nim-bench
+  labels:
+    app: sglang-llama
+    framework: sglang
+spec:
+  selector:
+    app: sglang-llama
+  ports:
+  - name: http
+    port: 8000
+    targetPort: 8000
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sglang-llama
+  namespace: nim-bench
+  labels:
+    app: sglang-llama
+    framework: sglang
+    model: llama-3-8b
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sglang-llama
+  template:
+    metadata:
+      labels:
+        app: sglang-llama
+        framework: sglang
+    spec:
+      serviceAccountName: nim-bench-sa
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
+        fsGroup: 0
+      containers:
+      - name: sglang
+        image: docker.io/lmsysorg/sglang:v0.4.7-cu124
+        command: ["python3", "-m", "sglang.launch_server"]
+        args:
+        - --model-path=/models/llama-3-8b-instruct
+        - --served-model-name=llama-3-8b-instruct
+        - --port=8000
+        - --host=0.0.0.0
+        - --dtype=float16
+        - --trust-remote-code
+        env:
+        - name: TRANSFORMERS_OFFLINE
+          value: "1"
+        - name: HF_HUB_OFFLINE
+          value: "1"
+        ports:
+        - containerPort: 8000
+          name: http
+        resources:
+          requests:
+            memory: "32Gi"
+            cpu: "8"
+            nvidia.com/gpu: "1"
+          limits:
+            memory: "64Gi"
+            cpu: "16"
+            nvidia.com/gpu: "1"
+        volumeMounts:
+        - name: fss-models
+          mountPath: /models
+          readOnly: true
+        - name: shm
+          mountPath: /dev/shm
+        - name: tools
+          mountPath: /tools
+          readOnly: true
+        - name: results
+          mountPath: /results
+      volumes:
+      - name: fss-models
+        hostPath:
+          path: /mnt/coecommonfss/llmcore/2026-NIM-vLLM_LLM/models
+          type: Directory
+      - name: shm
+        emptyDir:
+          medium: Memory
+          sizeLimit: "16Gi"
+      - name: tools
+        hostPath:
+          path: /mnt/coecommonfss/llmcore/2026-NIM-vLLM_LLM/tools
+          type: Directory
+      - name: results
+        hostPath:
+          path: /mnt/coecommonfss/llmcore/2026-NIM-vLLM_LLM/results/sglang
+          type: DirectoryOrCreate
+      nodeName: 10.0.10.75  # GPU Node 1
+      tolerations:
+      - key: nvidia.com/gpu
+        operator: Exists
+        effect: NoSchedule

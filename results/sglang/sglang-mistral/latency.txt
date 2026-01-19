@@ -1,0 +1,8 @@
+SGLang Mistral-7B Latency Results
+==================================
+
+max_tokens=32: 1.050s, 32 tokens, 30.5 tok/s
+max_tokens=64: 2.118s, 64 tokens, 30.2 tok/s
+max_tokens=128: 4.225s, 128 tokens, 30.3 tok/s
+max_tokens=256: 8.477s, 256 tokens, 30.2 tok/s
+max_tokens=512: 17.042s, 512 tokens, 30.0 tok/s

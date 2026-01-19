@@ -1,0 +1,8 @@
+TGI Llama-3-8B Latency Results
+==============================
+
+max_tokens=32: 1.141s, 32 tokens, 28.0 tok/s
+max_tokens=64: 2.271s, 64 tokens, 28.2 tok/s
+max_tokens=128: 4.538s, 128 tokens, 28.2 tok/s
+max_tokens=256: 9.102s, 256 tokens, 28.1 tok/s
+max_tokens=512: 18.223s, 512 tokens, 28.1 tok/s

@@ -1,0 +1,13 @@
+{
+  "model": "llama-3-8b-instruct",
+  "backend": "SGLang v0.4.7",
+  "gpu": "NVIDIA A10",
+  "timestamp": "2026-01-18T22:40:41+00:00",
+  "results": [
+    {"max_tokens": 32, "actual_tokens": 32, "latency_s": 1.114368, "throughput_tps": 28.71},
+    {"max_tokens": 64, "actual_tokens": 64, "latency_s": 2.230717, "throughput_tps": 28.69},
+    {"max_tokens": 128, "actual_tokens": 128, "latency_s": 4.448166, "throughput_tps": 28.77},
+    {"max_tokens": 256, "actual_tokens": 256, "latency_s": 8.939041, "throughput_tps": 28.63},
+    {"max_tokens": 512, "actual_tokens": 512, "latency_s": 17.991759, "throughput_tps": 28.45}
+  ]
+}

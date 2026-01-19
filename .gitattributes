@@ -1,0 +1,18 @@
+# Git LFS tracking for large binary files
+# Uncomment if using Git LFS for nsys profiles
+
+# *.nsys-rep filter=lfs diff=lfs merge=lfs -text
+# *.sqlite filter=lfs diff=lfs merge=lfs -text
+
+# Mark binary files
+*.png binary
+*.pdf binary
+*.nsys-rep binary
+
+# Normalize line endings
+*.yaml text eol=lf
+*.yml text eol=lf
+*.sh text eol=lf
+*.py text eol=lf
+*.md text eol=lf
+*.json text eol=lf

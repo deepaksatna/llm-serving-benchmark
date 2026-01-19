@@ -1,0 +1,166 @@
+# nsys Profiler Job Template
+# Use this job to profile any running inference server
+#
+# Usage:
+# 1. Deploy an inference server (NIM, vLLM, SGLang, or TGI)
+# 2. Update SERVICE_URL and MODEL_NAME below
+# 3. kubectl apply -f 01-nsys-profiler-job.yaml
+# 4. Check results: kubectl exec -it nsys-profiler -n nim-bench -- ls /results/
+#
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: nsys-profiler
+  namespace: nim-bench
+  labels:
+    app: nsys-profiler
+spec:
+  backoffLimit: 1
+  ttlSecondsAfterFinished: 3600  # Cleanup after 1 hour
+  template:
+    metadata:
+      labels:
+        app: nsys-profiler
+    spec:
+      restartPolicy: Never
+      serviceAccountName: nim-bench-sa
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
+        fsGroup: 0
+      containers:
+      - name: profiler
+        image: docker.io/nvidia/cuda:12.4.0-devel-ubuntu22.04
+        command: ["/bin/bash", "-c"]
+        args:
+        - |
+          set -e
+          echo "=============================================="
+          echo "  NVIDIA Nsight Systems GPU Profiler"
+          echo "=============================================="
+
+          # Configuration - UPDATE THESE FOR YOUR SETUP
+          SERVICE_URL="${SERVICE_URL:-http://sglang-llama-svc:8000}"
+          MODEL_NAME="${MODEL_NAME:-llama-3-8b-instruct}"
+          OUTPUT_NAME="${OUTPUT_NAME:-inference_profile}"
+          PROFILE_DURATION="${PROFILE_DURATION:-30}"
+
+          echo "Service URL: $SERVICE_URL"
+          echo "Model: $MODEL_NAME"
+          echo "Output: $OUTPUT_NAME"
+          echo "Duration: ${PROFILE_DURATION}s"
+          echo ""
+
+          # Install dependencies
+          apt-get update && apt-get install -y curl > /dev/null 2>&1
+
+          # Install nsys from tools volume
+          echo "Installing nsys..."
+          if [ -f /tools/nsight-systems-cli-2025.6.1.deb ]; then
+              dpkg --force-depends -i /tools/nsight-systems-cli-2025.6.1.deb 2>/dev/null || true
+          else
+              echo "ERROR: nsys package not found in /tools/"
+              exit 1
+          fi
+
+          export PATH="/opt/nvidia/nsight-systems-cli/2025.6.1/bin:$PATH"
+          nsys --version
+
+          # Wait for service to be ready
+          echo ""
+          echo "Waiting for inference service..."
+          for i in $(seq 1 60); do
+              if curl -s ${SERVICE_URL}/health > /dev/null 2>&1; then
+                  echo "Service is ready!"
+                  break
+              fi
+              if [ $i -eq 60 ]; then
+                  echo "ERROR: Service not ready after 60 seconds"
+                  exit 1
+              fi
+              echo "  Waiting... ($i/60)"
+              sleep 5
+          done
+
+          # Warmup requests
+          echo ""
+          echo "Running warmup requests..."
+          for i in 1 2 3; do
+              curl -s ${SERVICE_URL}/v1/completions \
+                  -H "Content-Type: application/json" \
+                  -d "{\"model\":\"${MODEL_NAME}\",\"prompt\":\"warmup\",\"max_tokens\":10}" > /dev/null
+          done
+          echo "Warmup complete"
+
+          # Run profiling
+          echo ""
+          echo "Starting GPU profiling for ${PROFILE_DURATION} seconds..."
+          mkdir -p /results
+
+          nsys profile \
+              --output=/results/${OUTPUT_NAME} \
+              --force-overwrite=true \
+              --trace=cuda,nvtx,cudnn,cublas \
+              --cuda-memory-usage=true \
+              --cudabacktrace=kernel \
+              --duration=${PROFILE_DURATION} \
+              --sample=process-tree \
+              --backtrace=dwarf \
+              curl -s ${SERVICE_URL}/v1/completions \
+                  -H "Content-Type: application/json" \
+                  -d "{\"model\":\"${MODEL_NAME}\",\"prompt\":\"Write a comprehensive essay about artificial intelligence and machine learning, covering their history, current applications in healthcare, finance, and education, and future prospects. Include discussion of ethical considerations and societal impact.\",\"max_tokens\":512}"
+
+          echo ""
+          echo "=============================================="
+          echo "  Profiling Complete!"
+          echo "=============================================="
+          echo ""
+          echo "Profile files:"
+          ls -la /results/
+
+          # Keep pod alive for file extraction
+          echo ""
+          echo "Keeping pod alive for 30 minutes for file extraction..."
+          echo "To copy files: kubectl cp nim-bench/nsys-profiler:/results/ ./results/"
+          sleep 1800
+
+        env:
+        # UPDATE THESE ENVIRONMENT VARIABLES FOR YOUR SETUP
+        - name: SERVICE_URL
+          value: "http://sglang-llama-svc:8000"  # Change to your service
+        - name: MODEL_NAME
+          value: "llama-3-8b-instruct"  # Change to your model
+        - name: OUTPUT_NAME
+          value: "sglang_llama_profile"  # Change output name
+        - name: PROFILE_DURATION
+          value: "30"  # Profiling duration in seconds
+
+        resources:
+          requests:
+            memory: "4Gi"
+            cpu: "2"
+          limits:
+            memory: "8Gi"
+            cpu: "4"
+
+        volumeMounts:
+        - name: tools
+          mountPath: /tools
+          readOnly: true
+        - name: results
+          mountPath: /results
+
+      volumes:
+      - name: tools
+        hostPath:
+          path: /mnt/coecommonfss/llmcore/2026-NIM-vLLM_LLM/tools
+          type: Directory
+      - name: results
+        hostPath:
+          path: /mnt/coecommonfss/llmcore/2026-NIM-vLLM_LLM/results/profiles
+          type: DirectoryOrCreate
+
+      tolerations:
+      - key: nvidia.com/gpu
+        operator: Exists
+        effect: NoSchedule

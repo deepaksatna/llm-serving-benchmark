@@ -1,0 +1,45 @@
+# Namespace for LLM Inference Benchmarking
+# Creates isolated environment for all inference server deployments
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: nim-bench
+  labels:
+    app.kubernetes.io/name: llm-inference-benchmark
+    app.kubernetes.io/component: namespace
+---
+# Service Account for benchmark pods
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: nim-bench-sa
+  namespace: nim-bench
+---
+# Role for benchmark operations
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: nim-bench-role
+  namespace: nim-bench
+rules:
+- apiGroups: [""]
+  resources: ["pods", "pods/log", "pods/exec", "services"]
+  verbs: ["get", "list", "watch", "create", "delete"]
+- apiGroups: ["apps"]
+  resources: ["deployments"]
+  verbs: ["get", "list", "watch", "create", "delete", "patch", "update"]
+---
+# RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: nim-bench-rolebinding
+  namespace: nim-bench
+subjects:
+- kind: ServiceAccount
+  name: nim-bench-sa
+  namespace: nim-bench
+roleRef:
+  kind: Role
+  name: nim-bench-role
+  apiGroup: rbac.authorization.k8s.io

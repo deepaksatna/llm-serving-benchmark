@@ -1,0 +1,14 @@
+{
+  "server": "TGI",
+  "model": "Llama-3-8B-Instruct",
+  "backend": "HuggingFace TGI 2.4.1",
+  "gpu": "NVIDIA A10",
+  "timestamp": "2026-01-18T23:01:00+00:00",
+  "results": [
+    {"max_tokens": 32, "latency_s": 1.141, "output_tokens": 32, "tokens_per_second": 28.0},
+    {"max_tokens": 64, "latency_s": 2.271, "output_tokens": 64, "tokens_per_second": 28.2},
+    {"max_tokens": 128, "latency_s": 4.538, "output_tokens": 128, "tokens_per_second": 28.2},
+    {"max_tokens": 256, "latency_s": 9.102, "output_tokens": 256, "tokens_per_second": 28.1},
+    {"max_tokens": 512, "latency_s": 18.223, "output_tokens": 512, "tokens_per_second": 28.1}
+  ]
+}

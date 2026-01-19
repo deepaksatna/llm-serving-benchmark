@@ -1,0 +1,13 @@
+{
+  "model": "mistralai/Mistral-7B-Instruct-v0.3",
+  "backend": "vLLM v0.6.4 (PagedAttention)",
+  "gpu": "NVIDIA A10",
+  "timestamp": "2026-01-18T21:45:00+00:00",
+  "results": [
+    {"max_tokens": 32, "actual_tokens": 32, "latency_s": 1.103, "throughput_tps": 29.00},
+    {"max_tokens": 64, "actual_tokens": 64, "latency_s": 2.207, "throughput_tps": 29.00},
+    {"max_tokens": 128, "actual_tokens": 128, "latency_s": 4.414, "throughput_tps": 29.00},
+    {"max_tokens": 256, "actual_tokens": 256, "latency_s": 8.828, "throughput_tps": 29.00},
+    {"max_tokens": 512, "actual_tokens": 512, "latency_s": 17.655, "throughput_tps": 29.00}
+  ]
+}

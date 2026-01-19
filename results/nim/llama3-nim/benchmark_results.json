@@ -1,0 +1,13 @@
+{
+  "model": "meta/llama-3.1-8b-instruct",
+  "backend": "TensorRT-LLM (NIM 1.8.4)",
+  "gpu": "NVIDIA A10",
+  "timestamp": "2026-01-18T22:25:43+00:00",
+  "results": [
+    {"max_tokens": 32, "actual_tokens": 32, "latency_s": 1.009431, "throughput_tps": 31.70},
+    {"max_tokens": 64, "actual_tokens": 64, "latency_s": 2.016785, "throughput_tps": 31.73},
+    {"max_tokens": 128, "actual_tokens": 128, "latency_s": 4.033864, "throughput_tps": 31.73},
+    {"max_tokens": 256, "actual_tokens": 256, "latency_s": 8.088879, "throughput_tps": 31.64},
+    {"max_tokens": 512, "actual_tokens": 512, "latency_s": 16.172401, "throughput_tps": 31.65}
+  ]
+}

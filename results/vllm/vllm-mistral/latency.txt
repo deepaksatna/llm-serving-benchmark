@@ -1,0 +1,8 @@
+vLLM Mistral-7B Latency Results
+================================
+
+max_tokens=32: 1.103s, 32 tokens, 29.0 tok/s
+max_tokens=64: 2.207s, 64 tokens, 29.0 tok/s
+max_tokens=128: 4.414s, 128 tokens, 29.0 tok/s
+max_tokens=256: 8.828s, 256 tokens, 29.0 tok/s
+max_tokens=512: 17.655s, 512 tokens, 29.0 tok/s

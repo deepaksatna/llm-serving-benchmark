@@ -1,0 +1,8 @@
+SGLang Llama-3-8B Latency Results
+==================================
+
+max_tokens=32: 1.114s, 32 tokens, 28.7 tok/s
+max_tokens=64: 2.231s, 64 tokens, 28.7 tok/s
+max_tokens=128: 4.448s, 128 tokens, 28.8 tok/s
+max_tokens=256: 8.939s, 256 tokens, 28.6 tok/s
+max_tokens=512: 17.992s, 512 tokens, 28.5 tok/s

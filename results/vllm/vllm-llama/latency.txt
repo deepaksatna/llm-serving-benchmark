@@ -1,0 +1,8 @@
+vLLM Llama-3-8B Latency Results
+================================
+
+max_tokens=32: 1.143s, 32 tokens, 28.0 tok/s
+max_tokens=64: 2.286s, 64 tokens, 28.0 tok/s
+max_tokens=128: 4.571s, 128 tokens, 28.0 tok/s
+max_tokens=256: 9.143s, 256 tokens, 28.0 tok/s
+max_tokens=512: 18.286s, 512 tokens, 28.0 tok/s

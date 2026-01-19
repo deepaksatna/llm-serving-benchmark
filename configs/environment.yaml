@@ -1,0 +1,87 @@
+# Environment Configuration for LLM Inference Benchmark
+# Tested and validated on OCI (Oracle Cloud Infrastructure)
+
+cluster:
+  name: "OKE GPU Cluster"
+  provider: "Oracle Cloud Infrastructure (OCI)"
+  kubernetes_version: "1.28.x"
+
+gpu_nodes:
+  - name: "GPU Node 1"
+    ip: "10.0.10.75"
+    gpu: "NVIDIA A10"
+    gpu_count: 2
+    gpu_memory: "24GB per GPU"
+    cpu_cores: 16
+    memory: "256GB"
+
+  - name: "GPU Node 2"
+    ip: "10.0.10.101"
+    gpu: "NVIDIA A10"
+    gpu_count: 2
+    gpu_memory: "24GB per GPU"
+    cpu_cores: 16
+    memory: "256GB"
+
+storage:
+  type: "OCI File Storage Service (FSS)"
+  mount_target: "10.0.10.24:/coecommonfss"
+  paths:
+    models:
+      llama: "/mnt/coecommonfss/llmcore/2026-NIM-vLLM_LLM/models/llama-3-8b-instruct"
+      mistral: "/mnt/coecommonfss/llmcore/LLM-training/offline/image/models/mistralai--Mistral-7B-Instruct-v0.3"
+    results:
+      nim: "/mnt/coecommonfss/llmcore/2026-NIM-vLLM_LLM/results/nim"
+      sglang: "/mnt/coecommonfss/llmcore/2026-NIM-vLLM_LLM/results/sglang"
+      tgi: "/mnt/coecommonfss/llmcore/2026-NIM-vLLM_LLM/results/tgi"
+      vllm: "/mnt/coecommonfss/llmcore/2026-NIM-vLLM_LLM/results/vllm"
+    tools: "/mnt/coecommonfss/llmcore/2026-NIM-vLLM_LLM/tools"
+    nim_cache: "/mnt/coecommonfss/llmcore/2026-NIM-vLLM_LLM/nim-cache"
+
+models:
+  - name: "Llama-3-8B-Instruct"
+    provider: "Meta"
+    parameters: "8B"
+    context_length: 8192
+
+  - name: "Mistral-7B-Instruct-v0.3"
+    provider: "Mistral AI"
+    parameters: "7B"
+    context_length: 32768
+
+frameworks:
+  nim:
+    version: "1.8.4"
+    backend: "TensorRT-LLM"
+    image: "nvcr.io/nim/meta/llama-3.1-8b-instruct:1.8.4"
+    requires_ngc_key: true
+
+  sglang:
+    version: "0.4.7"
+    backend: "FlashInfer"
+    image: "docker.io/lmsysorg/sglang:v0.4.7-cu124"
+    requires_ngc_key: false
+
+  tgi:
+    version: "2.4.1"
+    backend: "FlashAttention"
+    image: "ghcr.io/huggingface/text-generation-inference:2.4.1"
+    requires_ngc_key: false
+
+  vllm:
+    version: "0.6.4"
+    backend: "PagedAttention"
+    image: "vllm/vllm-openai:v0.6.4"
+    requires_ngc_key: false
+
+benchmark_config:
+  max_tokens: [32, 64, 128, 256, 512]
+  prompt: "Explain quantum computing in detail"
+  warmup_requests: 3
+  test_requests: 5
+
+nsys_profiling:
+  tool_path: "/opt/nvidia/nsight-systems-cli/2025.6.1/bin/nsys"
+  deb_package: "nsight-systems-cli-2025.6.1.deb"
+  traces: ["cuda", "nvtx", "cudnn", "cublas"]
+  duration: 30

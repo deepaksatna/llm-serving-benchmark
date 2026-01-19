@@ -1,0 +1,101 @@
+# NVIDIA NIM - Llama-3.1-8B-Instruct
+# TensorRT-LLM optimized inference with highest throughput
+# Throughput: ~31.7 tok/s on NVIDIA A10
+apiVersion: v1
+kind: Service
+metadata:
+  name: llama3-nim-svc
+  namespace: nim-bench
+  labels:
+    app: llama3-nim
+    framework: nim
+spec:
+  selector:
+    app: llama3-nim
+  ports:
+  - name: http
+    port: 8000
+    targetPort: 8000
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: llama3-nim
+  namespace: nim-bench
+  labels:
+    app: llama3-nim
+    framework: nim
+    model: llama-3.1-8b
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: llama3-nim
+  template:
+    metadata:
+      labels:
+        app: llama3-nim
+        framework: nim
+    spec:
+      serviceAccountName: nim-bench-sa
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
+        fsGroup: 0
+      initContainers:
+      - name: fix-permissions
+        image: busybox
+        command: ['sh', '-c', 'mkdir -p /opt/nim/.cache && chmod -R 777 /opt/nim/.cache']
+        volumeMounts:
+        - name: nim-cache
+          mountPath: /opt/nim/.cache
+      containers:
+      - name: nim
+        image: nvcr.io/nim/meta/llama-3.1-8b-instruct:1.8.4
+        env:
+        - name: NIM_CACHE_PATH
+          value: "/opt/nim/.cache"
+        - name: NGC_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: ngc-api-secret
+              key: NGC_API_KEY
+        ports:
+        - containerPort: 8000
+          name: http
+        resources:
+          requests:
+            memory: "32Gi"
+            cpu: "8"
+            nvidia.com/gpu: "1"
+          limits:
+            memory: "64Gi"
+            cpu: "16"
+            nvidia.com/gpu: "1"
+        volumeMounts:
+        - name: nim-cache
+          mountPath: /opt/nim/.cache
+        - name: results
+          mountPath: /results
+        - name: tools
+          mountPath: /tools
+          readOnly: true
+      volumes:
+      - name: nim-cache
+        hostPath:
+          path: /mnt/coecommonfss/llmcore/2026-NIM-vLLM_LLM/nim-cache
+          type: DirectoryOrCreate
+      - name: results
+        hostPath:
+          path: /mnt/coecommonfss/llmcore/2026-NIM-vLLM_LLM/results/nim
+          type: DirectoryOrCreate
+      - name: tools
+        hostPath:
+          path: /mnt/coecommonfss/llmcore/2026-NIM-vLLM_LLM/tools
+          type: Directory
+      nodeName: 10.0.10.75  # GPU Node 1
+      tolerations:
+      - key: nvidia.com/gpu
+        operator: Exists
+        effect: NoSchedule

@@ -1,0 +1,13 @@
+{
+  "model": "mistralai/mistral-7b-instruct-v0-3",
+  "backend": "TensorRT-LLM (NIM 1.8.4)",
+  "gpu": "NVIDIA A10",
+  "timestamp": "2026-01-18T22:26:55+00:00",
+  "results": [
+    {"max_tokens": 32, "actual_tokens": 32, "latency_s": 0.951259, "throughput_tps": 33.63},
+    {"max_tokens": 64, "actual_tokens": 64, "latency_s": 1.899673, "throughput_tps": 33.69},
+    {"max_tokens": 128, "actual_tokens": 128, "latency_s": 3.803191, "throughput_tps": 33.65},
+    {"max_tokens": 256, "actual_tokens": 256, "latency_s": 7.612456, "throughput_tps": 33.62},
+    {"max_tokens": 512, "actual_tokens": 360, "latency_s": 10.752849, "throughput_tps": 33.47}
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "model": "llama-3-8b-instruct",
+  "backend": "vLLM v0.6.4 (PagedAttention)",
+  "gpu": "NVIDIA A10",
+  "timestamp": "2026-01-18T21:30:00+00:00",
+  "results": [
+    {"max_tokens": 32, "actual_tokens": 32, "latency_s": 1.143, "throughput_tps": 28.00},
+    {"max_tokens": 64, "actual_tokens": 64, "latency_s": 2.286, "throughput_tps": 28.00},
+    {"max_tokens": 128, "actual_tokens": 128, "latency_s": 4.571, "throughput_tps": 28.00},
+    {"max_tokens": 256, "actual_tokens": 256, "latency_s": 9.143, "throughput_tps": 28.00},
+    {"max_tokens": 512, "actual_tokens": 512, "latency_s": 18.286, "throughput_tps": 28.00}
+  ]
+}

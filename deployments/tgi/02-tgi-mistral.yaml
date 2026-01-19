@@ -1,0 +1,107 @@
+# HuggingFace Text Generation Inference (TGI) - Mistral-7B-Instruct v0.3
+# Production-ready inference with continuous batching and FlashAttention
+# Throughput: ~29.6 tok/s on NVIDIA A10
+apiVersion: v1
+kind: Service
+metadata:
+  name: tgi-mistral-svc
+  namespace: nim-bench
+  labels:
+    app: tgi-mistral
+    framework: tgi
+spec:
+  selector:
+    app: tgi-mistral
+  ports:
+  - name: http
+    port: 8000
+    targetPort: 8000
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tgi-mistral
+  namespace: nim-bench
+  labels:
+    app: tgi-mistral
+    framework: tgi
+    model: mistral-7b
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tgi-mistral
+  template:
+    metadata:
+      labels:
+        app: tgi-mistral
+        framework: tgi
+    spec:
+      serviceAccountName: nim-bench-sa
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
+        fsGroup: 0
+      containers:
+      - name: tgi
+        image: ghcr.io/huggingface/text-generation-inference:2.4.1
+        args:
+        - --model-id=/models/mistralai--Mistral-7B-Instruct-v0.3
+        - --port=8000
+        - --max-input-length=4096
+        - --max-total-tokens=8192
+        - --max-batch-prefill-tokens=8192
+        - --dtype=float16
+        env:
+        - name: TRANSFORMERS_OFFLINE
+          value: "1"
+        - name: HF_HUB_OFFLINE
+          value: "1"
+        - name: HUGGINGFACE_OFFLINE
+          value: "1"
+        ports:
+        - containerPort: 8000
+          name: http
+        resources:
+          requests:
+            memory: "32Gi"
+            cpu: "8"
+            nvidia.com/gpu: "1"
+          limits:
+            memory: "64Gi"
+            cpu: "16"
+            nvidia.com/gpu: "1"
+        volumeMounts:
+        - name: fss-models
+          mountPath: /models
+          readOnly: true
+        - name: shm
+          mountPath: /dev/shm
+        - name: tools
+          mountPath: /tools
+          readOnly: true
+        - name: results
+          mountPath: /results
+      volumes:
+      - name: fss-models
+        hostPath:
+          path: /mnt/coecommonfss/llmcore/LLM-training/offline/image/models
+          type: Directory
+      - name: shm
+        emptyDir:
+          medium: Memory
+          sizeLimit: "16Gi"
+      - name: tools
+        hostPath:
+          path: /mnt/coecommonfss/llmcore/2026-NIM-vLLM_LLM/tools
+          type: Directory
+      - name: results
+        hostPath:
+          path: /mnt/coecommonfss/llmcore/2026-NIM-vLLM_LLM/results/tgi
+          type: DirectoryOrCreate
+      nodeName: 10.0.10.101  # GPU Node 2
+      tolerations:
+      - key: nvidia.com/gpu
+        operator: Exists
+        effect: NoSchedule

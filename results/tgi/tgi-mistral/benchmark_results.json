@@ -1,0 +1,13 @@
+{
+  "model": "mistralai/Mistral-7B-Instruct-v0.3",
+  "backend": "HuggingFace TGI 2.4.1",
+  "gpu": "NVIDIA A10",
+  "timestamp": "2026-01-18T22:42:02+00:00",
+  "results": [
+    {"max_tokens": 32, "actual_tokens": 32, "latency_s": 1.078849, "throughput_tps": 29.66},
+    {"max_tokens": 64, "actual_tokens": 64, "latency_s": 2.153460, "throughput_tps": 29.71},
+    {"max_tokens": 128, "actual_tokens": 128, "latency_s": 4.313632, "throughput_tps": 29.67},
+    {"max_tokens": 256, "actual_tokens": 256, "latency_s": 8.649114, "throughput_tps": 29.59},
+    {"max_tokens": 512, "actual_tokens": 349, "latency_s": 11.805238, "throughput_tps": 29.56}
+  ]
+}

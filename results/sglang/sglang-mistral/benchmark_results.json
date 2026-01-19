@@ -1,0 +1,14 @@
+{
+  "server": "SGLang",
+  "model": "Mistral-7B-Instruct-v0.3",
+  "backend": "SGLang v0.4.7 with FlashInfer",
+  "gpu": "NVIDIA A10",
+  "timestamp": "2026-01-18T23:02:00+00:00",
+  "results": [
+    {"max_tokens": 32, "latency_s": 1.050, "output_tokens": 32, "tokens_per_second": 30.5},
+    {"max_tokens": 64, "latency_s": 2.118, "output_tokens": 64, "tokens_per_second": 30.2},
+    {"max_tokens": 128, "latency_s": 4.225, "output_tokens": 128, "tokens_per_second": 30.3},
+    {"max_tokens": 256, "latency_s": 8.477, "output_tokens": 256, "tokens_per_second": 30.2},
+    {"max_tokens": 512, "latency_s": 17.042, "output_tokens": 512, "tokens_per_second": 30.0}
+  ]
+}

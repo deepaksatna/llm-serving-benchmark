@@ -1,0 +1,139 @@
+# vLLM GPU Profiler Job
+# Profiles vLLM inference server with nsys
+#
+# Prerequisites:
+# 1. vLLM server must be running: kubectl apply -f ../vllm/01-vllm-llama.yaml
+# 2. Wait for vLLM to be ready: kubectl logs -f <vllm-pod>
+#
+# Usage:
+# kubectl apply -f 05-vllm-profiler.yaml
+# kubectl logs -f job/vllm-profiler -n nim-bench
+#
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: vllm-profiler
+  namespace: nim-bench
+  labels:
+    app: vllm-profiler
+    framework: vllm
+spec:
+  backoffLimit: 1
+  ttlSecondsAfterFinished: 3600
+  template:
+    metadata:
+      labels:
+        app: vllm-profiler
+    spec:
+      restartPolicy: Never
+      serviceAccountName: nim-bench-sa
+      securityContext:
+        runAsUser: 0
+      containers:
+      - name: profiler
+        image: docker.io/nvidia/cuda:12.4.0-devel-ubuntu22.04
+        command: ["/bin/bash", "-c"]
+        args:
+        - |
+          set -e
+          echo "=== vLLM GPU Profiler ==="
+
+          # Install dependencies
+          apt-get update && apt-get install -y curl > /dev/null 2>&1
+
+          # Install nsys
+          dpkg --force-depends -i /tools/nsight-systems-cli-2025.6.1.deb 2>/dev/null || true
+          export PATH="/opt/nvidia/nsight-systems-cli/2025.6.1/bin:$PATH"
+
+          # Wait for vLLM Llama
+          echo "Waiting for vLLM Llama service..."
+          until curl -s http://vllm-llama-svc:8000/health > /dev/null 2>&1; do
+              sleep 5
+              echo "  Waiting..."
+          done
+          echo "vLLM Llama is ready!"
+
+          # Warmup
+          echo "Running warmup..."
+          for i in 1 2 3; do
+              curl -s http://vllm-llama-svc:8000/v1/completions \
+                  -H "Content-Type: application/json" \
+                  -d '{"model":"llama-3-8b-instruct","prompt":"warmup","max_tokens":10}' > /dev/null
+          done
+
+          # Profile vLLM Llama
+          echo ""
+          echo "Profiling vLLM Llama-3-8B..."
+          mkdir -p /results/vllm
+
+          nsys profile \
+              --output=/results/vllm/vllm_llama_profile \
+              --force-overwrite=true \
+              --trace=cuda,nvtx,cudnn,cublas \
+              --cuda-memory-usage=true \
+              --duration=30 \
+              curl -s http://vllm-llama-svc:8000/v1/completions \
+                  -H "Content-Type: application/json" \
+                  -d '{"model":"llama-3-8b-instruct","prompt":"Write a detailed essay about AI","max_tokens":256}'
+
+          echo ""
+          echo "=== vLLM Llama Profile Complete ==="
+          ls -la /results/vllm/
+
+          # Check for vLLM Mistral
+          echo ""
+          echo "Checking for vLLM Mistral service..."
+          if curl -s http://vllm-mistral-svc:8000/health > /dev/null 2>&1; then
+              echo "vLLM Mistral found, profiling..."
+
+              nsys profile \
+                  --output=/results/vllm/vllm_mistral_profile \
+                  --force-overwrite=true \
+                  --trace=cuda,nvtx,cudnn,cublas \
+                  --cuda-memory-usage=true \
+                  --duration=30 \
+                  curl -s http://vllm-mistral-svc:8000/v1/completions \
+                      -H "Content-Type: application/json" \
+                      -d '{"model":"mistral-7b-instruct","prompt":"Write a detailed essay about AI","max_tokens":256}'
+
+              echo "vLLM Mistral profile complete"
+          else
+              echo "vLLM Mistral not running, skipping"
+          fi
+
+          echo ""
+          echo "=== All vLLM Profiles Complete ==="
+          ls -la /results/vllm/
+
+          echo "Pod staying alive for 30 min..."
+          sleep 1800
+
+        resources:
+          requests:
+            memory: "4Gi"
+            cpu: "2"
+          limits:
+            memory: "8Gi"
+            cpu: "4"
+
+        volumeMounts:
+        - name: tools
+          mountPath: /tools
+          readOnly: true
+        - name: results
+          mountPath: /results
+
+      volumes:
+      - name: tools
+        hostPath:
+          path: /mnt/coecommonfss/llmcore/2026-NIM-vLLM_LLM/tools
+          type: Directory
+      - name: results
+        hostPath:
+          path: /mnt/coecommonfss/llmcore/2026-NIM-vLLM_LLM/results
+          type: DirectoryOrCreate
+
+      tolerations:
+      - key: nvidia.com/gpu
+        operator: Exists
+        effect: NoSchedule

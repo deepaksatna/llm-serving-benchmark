@@ -1,0 +1,8 @@
+Mistral-7B NIM Latency Results (TensorRT-LLM)
+=============================================
+
+max_tokens=32: 0.949548s, 32 tokens, 33.7 tok/s
+max_tokens=64: 1.896874s, 64 tokens, 33.7 tok/s
+max_tokens=128: 3.793424s, 128 tokens, 33.7 tok/s
+max_tokens=256: 7.597967s, 256 tokens, 33.6 tok/s
+max_tokens=512: 15.237284s, 512 tokens, 33.6 tok/s

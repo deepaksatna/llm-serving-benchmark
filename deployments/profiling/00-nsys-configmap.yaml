@@ -1,0 +1,177 @@
+# ConfigMap containing nsys profiling scripts
+# These scripts can be mounted into any inference pod for GPU profiling
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nsys-profiling-scripts
+  namespace: nim-bench
+  labels:
+    app: nsys-profiling
+data:
+  install-nsys.sh: |
+    #!/bin/bash
+    # Install NVIDIA Nsight Systems CLI
+    # Usage: ./install-nsys.sh
+
+    set -e
+
+    echo "=== Installing NVIDIA Nsight Systems CLI ==="
+
+    # Check if already installed
+    if command -v nsys &> /dev/null; then
+        echo "nsys already installed:"
+        nsys --version
+        exit 0
+    fi
+
+    # Install from tools volume if available
+    if [ -f /tools/nsight-systems-cli-2025.6.1.deb ]; then
+        echo "Installing from /tools/nsight-systems-cli-2025.6.1.deb..."
+        dpkg --force-depends -i /tools/nsight-systems-cli-2025.6.1.deb 2>/dev/null || true
+        export PATH="/opt/nvidia/nsight-systems-cli/2025.6.1/bin:$PATH"
+        echo "export PATH=\"/opt/nvidia/nsight-systems-cli/2025.6.1/bin:\$PATH\"" >> ~/.bashrc
+    else
+        echo "ERROR: nsys package not found at /tools/"
+        echo "Please ensure the tools volume is mounted with nsight-systems-cli-2025.6.1.deb"
+        exit 1
+    fi
+
+    # Verify installation
+    echo ""
+    echo "Installation complete:"
+    nsys --version
+
+  profile-inference.sh: |
+    #!/bin/bash
+    # Profile LLM inference with nsys
+    # Usage: ./profile-inference.sh <output-name> <service-url> <model-name>
+
+    set -e
+
+    OUTPUT_NAME=${1:-"inference_profile"}
+    SERVICE_URL=${2:-"http://localhost:8000"}
+    MODEL_NAME=${3:-"model"}
+    DURATION=${4:-30}
+
+    # Ensure nsys is in PATH
+    export PATH="/opt/nvidia/nsight-systems-cli/2025.6.1/bin:$PATH"
+
+    echo "=== LLM Inference GPU Profiling ==="
+    echo "Output: /results/${OUTPUT_NAME}.nsys-rep"
+    echo "Service: ${SERVICE_URL}"
+    echo "Model: ${MODEL_NAME}"
+    echo "Duration: ${DURATION}s"
+    echo ""
+
+    # Create results directory
+    mkdir -p /results
+
+    # Run profiling
+    echo "Starting nsys profile (${DURATION} second capture)..."
+    nsys profile \
+        --output=/results/${OUTPUT_NAME} \
+        --force-overwrite=true \
+        --trace=cuda,nvtx,cudnn,cublas \
+        --cuda-memory-usage=true \
+        --cudabacktrace=kernel \
+        --duration=${DURATION} \
+        --sample=process-tree \
+        --backtrace=dwarf \
+        curl -s ${SERVICE_URL}/v1/completions \
+            -H "Content-Type: application/json" \
+            -d "{\"model\":\"${MODEL_NAME}\",\"prompt\":\"Write a detailed essay about artificial intelligence, machine learning, and their applications in healthcare, finance, and education. Discuss the current state, challenges, and future prospects.\",\"max_tokens\":256}"
+
+    echo ""
+    echo "=== Profiling Complete ==="
+    echo "Profile saved to: /results/${OUTPUT_NAME}.nsys-rep"
+    ls -la /results/${OUTPUT_NAME}*
+
+  batch-profile.sh: |
+    #!/bin/bash
+    # Profile with multiple concurrent requests
+    # Usage: ./batch-profile.sh <output-name> <service-url> <model-name> <num-requests>
+
+    set -e
+
+    OUTPUT_NAME=${1:-"batch_profile"}
+    SERVICE_URL=${2:-"http://localhost:8000"}
+    MODEL_NAME=${3:-"model"}
+    NUM_REQUESTS=${4:-10}
+
+    export PATH="/opt/nvidia/nsight-systems-cli/2025.6.1/bin:$PATH"
+
+    echo "=== Batch Inference GPU Profiling ==="
+    echo "Requests: ${NUM_REQUESTS}"
+    echo ""
+
+    mkdir -p /results
+
+    # Create batch request script
+    cat > /tmp/batch_requests.sh << 'BATCH_EOF'
+    #!/bin/bash
+    SERVICE_URL=$1
+    MODEL_NAME=$2
+    NUM_REQUESTS=$3
+
+    for i in $(seq 1 $NUM_REQUESTS); do
+        curl -s ${SERVICE_URL}/v1/completions \
+            -H "Content-Type: application/json" \
+            -d "{\"model\":\"${MODEL_NAME}\",\"prompt\":\"Request ${i}: Explain quantum computing\",\"max_tokens\":128}" &
+    done
+    wait
+    BATCH_EOF
+    chmod +x /tmp/batch_requests.sh
+
+    # Profile batch requests
+    nsys profile \
+        --output=/results/${OUTPUT_NAME} \
+        --force-overwrite=true \
+        --trace=cuda,nvtx,cudnn,cublas \
+        --cuda-memory-usage=true \
+        --duration=60 \
+        /tmp/batch_requests.sh ${SERVICE_URL} ${MODEL_NAME} ${NUM_REQUESTS}
+
+    echo ""
+    echo "Batch profile saved to: /results/${OUTPUT_NAME}.nsys-rep"
+
+  analyze-profile.sh: |
+    #!/bin/bash
+    # Analyze nsys profile and export statistics
+    # Usage: ./analyze-profile.sh <profile-file>
+
+    set -e
+
+    PROFILE_FILE=${1:-"/results/inference_profile.nsys-rep"}
+
+    export PATH="/opt/nvidia/nsight-systems-cli/2025.6.1/bin:$PATH"
+
+    echo "=== Analyzing Profile: ${PROFILE_FILE} ==="
+    echo ""
+
+    if [ ! -f "$PROFILE_FILE" ]; then
+        echo "ERROR: Profile file not found: $PROFILE_FILE"
+        exit 1
+    fi
+
+    # Generate statistics
+    echo "=== CUDA Kernel Summary ==="
+    nsys stats "$PROFILE_FILE" --report cuda_kern_sum 2>/dev/null || echo "No CUDA kernel data"
+
+    echo ""
+    echo "=== CUDA API Summary ==="
+    nsys stats "$PROFILE_FILE" --report cuda_api_sum 2>/dev/null || echo "No CUDA API data"
+
+    echo ""
+    echo "=== GPU Memory Operations ==="
+    nsys stats "$PROFILE_FILE" --report cuda_mem_size_sum 2>/dev/null || echo "No memory data"
+
+    # Export to CSV
+    OUTPUT_DIR=$(dirname "$PROFILE_FILE")
+    BASENAME=$(basename "$PROFILE_FILE" .nsys-rep)
+
+    echo ""
+    echo "Exporting statistics to CSV..."
+    nsys stats "$PROFILE_FILE" --format csv --output "${OUTPUT_DIR}/${BASENAME}_stats.csv" 2>/dev/null || true
+
+    echo ""
+    echo "Analysis complete. CSV exported to: ${OUTPUT_DIR}/${BASENAME}_stats.csv"

@@ -1,0 +1,8 @@
+TGI Mistral-7B Latency Results
+==============================
+
+max_tokens=32: 1.079s, 32 tokens, 29.7 tok/s
+max_tokens=64: 2.153s, 64 tokens, 29.7 tok/s
+max_tokens=128: 4.314s, 128 tokens, 29.7 tok/s
+max_tokens=256: 8.649s, 256 tokens, 29.6 tok/s
+max_tokens=512: 11.805s, 349 tokens, 29.6 tok/s

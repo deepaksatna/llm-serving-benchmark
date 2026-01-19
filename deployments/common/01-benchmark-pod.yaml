@@ -1,0 +1,28 @@
+# Benchmark Pod - Utility pod for running benchmarks
+# Contains curl, jq for API testing
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nim-benchmark
+  namespace: nim-bench
+  labels:
+    app: nim-benchmark
+spec:
+  serviceAccountName: nim-bench-sa
+  containers:
+  - name: benchmark
+    image: docker.io/alpine:latest
+    command: ["sh", "-c", "apk add --no-cache curl jq bc && sleep infinity"]
+    volumeMounts:
+    - name: results
+      mountPath: /results
+  volumes:
+  - name: results
+    hostPath:
+      path: /mnt/coecommonfss/llmcore/2026-NIM-vLLM_LLM/results/nim
+      type: DirectoryOrCreate
+  tolerations:
+  - key: nvidia.com/gpu
+    operator: Exists
+    effect: NoSchedule
+  restartPolicy: Never
