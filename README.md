@@ -1,7 +1,5 @@
 # LLM Inference Framework Benchmark Suite
 
-**Author:** Deepak Soni
-
 A comprehensive benchmarking suite for evaluating and comparing Large Language Model (LLM) inference frameworks on Kubernetes with GPU acceleration. This project provides production-tested deployments, automated benchmarking scripts, GPU profiling tools, and detailed performance analysis.
 
 ![Kubernetes](https://img.shields.io/badge/Kubernetes-326CE5?style=flat-square&logo=kubernetes&logoColor=white)
