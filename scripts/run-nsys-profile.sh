@@ -1,5 +1,6 @@
 #!/bin/bash
 # NVIDIA Nsight Systems Profiling Script
+# Author: Deepak Soni
 # Captures GPU profiling data for inference servers
 # Usage: ./run-nsys-profile.sh <pod-name> <output-name>
 

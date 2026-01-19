@@ -1,4 +1,5 @@
 # SGLang - Mistral-7B-Instruct v0.3
+# Author: Deepak Soni
 # High-performance LLM serving with RadixAttention and FlashInfer
 # Note: Requires protobuf installation for tekken tokenizer
 # Throughput: ~30.2 tok/s on NVIDIA A10

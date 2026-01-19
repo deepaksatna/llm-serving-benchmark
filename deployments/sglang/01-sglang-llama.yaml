@@ -1,4 +1,5 @@
 # SGLang - Llama-3-8B-Instruct
+# Author: Deepak Soni
 # High-performance LLM serving with RadixAttention and FlashInfer
 # Throughput: ~28.5 tok/s on NVIDIA A10
 apiVersion: v1

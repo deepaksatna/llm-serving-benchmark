@@ -1,4 +1,5 @@
 # TGI GPU Profiler Job
+# Author: Deepak Soni
 # Profiles HuggingFace TGI inference server with nsys
 #
 # Prerequisites:

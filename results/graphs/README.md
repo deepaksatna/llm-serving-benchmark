@@ -1,5 +1,7 @@
 # LLM Inference Benchmark Performance Graphs
 
+**Author:** Deepak Soni
+
 This directory contains professional visualizations of the benchmark results comparing NVIDIA NIM, vLLM, SGLang, and HuggingFace TGI inference frameworks.
 
 ## Test Environment

@@ -1,5 +1,6 @@
 #!/bin/bash
 # Deploy All LLM Inference Servers
+# Author: Deepak Soni
 # Usage: ./deploy-all.sh [nim|sglang|tgi|all]
 
 set -e

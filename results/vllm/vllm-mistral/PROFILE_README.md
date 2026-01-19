@@ -1,5 +1,7 @@
 # vLLM Mistral-7B nsys Profile
 
+**Author:** Deepak Soni
+
 ## Status: Not Yet Generated
 
 The nsys profile for vLLM Mistral was not captured in the current benchmark session.

@@ -1,5 +1,7 @@
 # GPU Profiling Guide with NVIDIA Nsight Systems
 
+**Author:** Deepak Soni
+
 This guide explains how to use NVIDIA Nsight Systems (nsys) to profile LLM inference workloads and analyze GPU performance.
 
 ## Why GPU Profiling?

@@ -1,5 +1,6 @@
 #!/bin/bash
 # LLM Inference Benchmark Script
+# Author: Deepak Soni
 # Runs latency benchmarks and generates results
 # Usage: ./benchmark.sh <framework> <model> <service-url>
 

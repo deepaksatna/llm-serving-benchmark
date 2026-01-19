@@ -1,4 +1,5 @@
 # ConfigMap containing nsys profiling scripts
+# Author: Deepak Soni
 # These scripts can be mounted into any inference pod for GPU profiling
 apiVersion: v1
 kind: ConfigMap

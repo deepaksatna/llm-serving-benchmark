@@ -1,5 +1,7 @@
 # GPU Profiling with NVIDIA Nsight Systems (nsys)
 
+**Author:** Deepak Soni
+
 This directory contains Kubernetes Job definitions for profiling LLM inference servers using NVIDIA Nsight Systems.
 
 ## Overview

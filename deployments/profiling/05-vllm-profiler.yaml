@@ -1,4 +1,5 @@
 # vLLM GPU Profiler Job
+# Author: Deepak Soni
 # Profiles vLLM inference server with nsys
 #
 # Prerequisites:

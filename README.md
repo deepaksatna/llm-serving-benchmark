@@ -1,32 +1,25 @@
 # LLM Inference Framework Benchmark Suite
 
+**Author:** Deepak Soni
+
 A comprehensive benchmarking suite for evaluating and comparing Large Language Model (LLM) inference frameworks on Kubernetes with GPU acceleration. This project provides production-tested deployments, automated benchmarking scripts, GPU profiling tools, and detailed performance analysis.
 
-<!-- Platform & Infrastructure -->
-![Kubernetes](https://img.shields.io/badge/Kubernetes-326CE5?style=for-the-badge&logo=kubernetes&logoColor=white)
-![Oracle Cloud](https://img.shields.io/badge/Oracle_Cloud-F80000?style=for-the-badge&logo=oracle&logoColor=white)
-![NVIDIA GPU](https://img.shields.io/badge/NVIDIA_A10-76B900?style=for-the-badge&logo=nvidia&logoColor=white)
-![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
-![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
-
-<!-- Inference Frameworks -->
-![NVIDIA NIM](https://img.shields.io/badge/NVIDIA_NIM-76B900?style=for-the-badge&logo=nvidia&logoColor=white)
-![vLLM](https://img.shields.io/badge/vLLM-FF6F00?style=for-the-badge&logo=v&logoColor=white)
-![SGLang](https://img.shields.io/badge/SGLang-2E86AB?style=for-the-badge&logo=lightning&logoColor=white)
-![HuggingFace TGI](https://img.shields.io/badge/HuggingFace_TGI-FFD21E?style=for-the-badge&logo=huggingface&logoColor=black)
-
-<!-- Models -->
-![Llama 3](https://img.shields.io/badge/Meta_Llama_3-0467DF?style=for-the-badge&logo=meta&logoColor=white)
-![Mistral](https://img.shields.io/badge/Mistral_7B-5A67D8?style=for-the-badge&logo=ghostery&logoColor=white)
-
-<!-- Tools & Profiling -->
-![Nsight Systems](https://img.shields.io/badge/Nsight_Systems-76B900?style=for-the-badge&logo=nvidia&logoColor=white)
-![TensorRT-LLM](https://img.shields.io/badge/TensorRT--LLM-76B900?style=for-the-badge&logo=nvidia&logoColor=white)
-![FlashAttention](https://img.shields.io/badge/FlashAttention-FF4500?style=for-the-badge&logo=lightning&logoColor=white)
-
-<!-- Storage -->
-![OCI FSS](https://img.shields.io/badge/OCI_File_Storage-F80000?style=for-the-badge&logo=oracle&logoColor=white)
-![NFS](https://img.shields.io/badge/NFS_Mount-4EAA25?style=for-the-badge&logo=linux&logoColor=white)
+![Kubernetes](https://img.shields.io/badge/Kubernetes-326CE5?style=flat-square&logo=kubernetes&logoColor=white)
+![Oracle Cloud](https://img.shields.io/badge/Oracle_Cloud-F80000?style=flat-square&logo=oracle&logoColor=white)
+![NVIDIA GPU](https://img.shields.io/badge/NVIDIA_A10-76B900?style=flat-square&logo=nvidia&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white)
+![NVIDIA NIM](https://img.shields.io/badge/NVIDIA_NIM-76B900?style=flat-square&logo=nvidia&logoColor=white)
+![vLLM](https://img.shields.io/badge/vLLM-FF6F00?style=flat-square&logo=v&logoColor=white)
+![SGLang](https://img.shields.io/badge/SGLang-2E86AB?style=flat-square&logo=lightning&logoColor=white)
+![HuggingFace TGI](https://img.shields.io/badge/HuggingFace_TGI-FFD21E?style=flat-square&logo=huggingface&logoColor=black)
+![Llama 3](https://img.shields.io/badge/Llama_3-0467DF?style=flat-square&logo=meta&logoColor=white)
+![Mistral](https://img.shields.io/badge/Mistral_7B-5A67D8?style=flat-square&logo=ghostery&logoColor=white)
+![Nsight Systems](https://img.shields.io/badge/Nsight_Systems-76B900?style=flat-square&logo=nvidia&logoColor=white)
+![TensorRT-LLM](https://img.shields.io/badge/TensorRT--LLM-76B900?style=flat-square&logo=nvidia&logoColor=white)
+![FlashAttention](https://img.shields.io/badge/FlashAttention-FF4500?style=flat-square&logo=lightning&logoColor=white)
+![OCI FSS](https://img.shields.io/badge/OCI_FSS-F80000?style=flat-square&logo=oracle&logoColor=white)
+![NFS](https://img.shields.io/badge/NFS-4EAA25?style=flat-square&logo=linux&logoColor=white)
 
 ## Table of Contents
 

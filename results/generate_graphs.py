@@ -3,7 +3,7 @@
 LLM Inference Benchmark Visualization Suite
 Generates professional performance graphs from benchmark results
 
-Author: AI CoE Benchmarking Team
+Author: Deepak Soni
 Date: January 2026
 """
 

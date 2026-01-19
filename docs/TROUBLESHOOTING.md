@@ -1,5 +1,7 @@
 # Troubleshooting Guide
 
+**Author:** Deepak Soni
+
 Common issues and solutions when deploying LLM inference frameworks on Kubernetes.
 
 ## Table of Contents

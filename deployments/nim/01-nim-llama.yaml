@@ -1,4 +1,5 @@
 # NVIDIA NIM - Llama-3.1-8B-Instruct
+# Author: Deepak Soni
 # TensorRT-LLM optimized inference with highest throughput
 # Throughput: ~31.7 tok/s on NVIDIA A10
 apiVersion: v1

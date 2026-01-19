@@ -1,4 +1,5 @@
 # HuggingFace Text Generation Inference (TGI) - Llama-3-8B-Instruct
+# Author: Deepak Soni
 # Production-ready inference with continuous batching and FlashAttention
 # Throughput: ~28.1 tok/s on NVIDIA A10
 apiVersion: v1

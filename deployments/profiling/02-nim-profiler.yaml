@@ -1,4 +1,5 @@
 # NIM GPU Profiler Job
+# Author: Deepak Soni
 # Profiles NVIDIA NIM inference server with nsys
 #
 # Prerequisites:

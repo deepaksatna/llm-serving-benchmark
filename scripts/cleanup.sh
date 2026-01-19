@@ -1,5 +1,6 @@
 #!/bin/bash
 # Cleanup Script - Remove all deployments
+# Author: Deepak Soni
 # Usage: ./cleanup.sh [nim|sglang|tgi|all]
 
 set -e

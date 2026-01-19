@@ -1,4 +1,5 @@
 # Environment Configuration for LLM Inference Benchmark
+# Author: Deepak Soni
 # Tested and validated on OCI (Oracle Cloud Infrastructure)
 
 cluster:

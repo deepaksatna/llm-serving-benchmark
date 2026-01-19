@@ -1,5 +1,7 @@
 # LLM Inference Framework Comparison
 
+**Author:** Deepak Soni
+
 A detailed comparison of NVIDIA NIM, vLLM, SGLang, and HuggingFace TGI for production LLM deployment.
 
 ## Executive Summary

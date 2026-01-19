@@ -1,5 +1,7 @@
 # vLLM Llama-3-8B nsys Profile
 
+**Author:** Deepak Soni
+
 ## Status: Not Yet Generated
 
 The nsys profile for vLLM Llama was not captured in the current benchmark session.

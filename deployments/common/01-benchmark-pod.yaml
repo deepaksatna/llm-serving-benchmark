@@ -1,4 +1,5 @@
 # Benchmark Pod - Utility pod for running benchmarks
+# Author: Deepak Soni
 # Contains curl, jq for API testing
 apiVersion: v1
 kind: Pod

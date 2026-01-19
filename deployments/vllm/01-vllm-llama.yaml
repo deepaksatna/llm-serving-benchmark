@@ -1,4 +1,5 @@
 # vLLM - Llama-3-8B-Instruct
+# Author: Deepak Soni
 # High-throughput LLM serving with PagedAttention
 # Throughput: ~27-29 tok/s on NVIDIA A10
 apiVersion: v1

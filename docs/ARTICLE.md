@@ -1,5 +1,7 @@
 # Benchmarking LLM Inference Frameworks: A Complete Guide
 
+**Author:** Deepak Soni
+
 **Comparing NVIDIA NIM, vLLM, SGLang, and HuggingFace TGI on GPU Infrastructure**
 
 ---
